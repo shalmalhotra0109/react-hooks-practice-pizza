@@ -1,68 +1,46 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import PizzaForm from "./PizzaForm";
 import PizzaList from "./PizzaList";
 
 function App() {
-  const [pizzas, setPizzas] = useState([]);
-  const [PizzaForm, setPizzaForm] = useState({
-    'topping': '',
-    'size': "small",
-    'vegetarian': false
-  })
+  const [pizzaData, setPizzaData] = useState([]);
+  const [pizzaFormData, setPizzaFormData] = useState({topping: '', size: '', vegetarian: false});
+
   useEffect(() => {
-    fetch('http://localhost:3001/pizzas')
-    .then((response) => response.json())
-    .then((pizzas) => setPizzas(pizzas))
-  });
-  function handlePizzaEdit(updatedPizzaForm){
-    setPizzaForm(updatedPizzaForm);
-  }
-  function handleFormChange(event) {
-    const target = event.target
-    const value = target.type === 'checkbox' ? target.checked : target.value
-    const name = target.name
+    fetch("http://localhost:3001/pizzas")
+      .then(r => r.json())
+      .then(pizzas => setPizzaData(pizzas))
+  }, [])
 
-    setPizzaForm({
-      ...PizzaForm,
-      [name]: value
-    })
+  const addToForm = (pizza) => {
+    setPizzaFormData(pizza);
   }
-  function handleSubmit(event) {
-    event.preventDefault()
-    const pizzaId = PizzaForm.pizzaId
-    fetch(`http://localhost:3001/pizzas{pizzaId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(PizzaForm),
-    })
-    .then((response) => response.json())
-    .then((updatedPizza) => {
-      const updatedPizzas = pizzas.map((pizza) => {
-        if (pizza.id === updatedPizza.id) {
-          return updatedPizza;
-        }
-      });
-      setPizzas(updatedPizzas);
-    setPizzaForm({
-      topping: '',
-      size: "small",
-      vegetarian: false,
-    });    
-    })
-      }
-    
 
-      
-     return (
+  const updatePizza = (updatedPizza) => {
+    const newPizzas = pizzaData.map(pizza => {
+      if (pizza.id === updatedPizza.id) return updatedPizza
+      return pizza;
+    })
+    setPizzaData(newPizzas);
+  }
+
+  return (
     <>
       <Header />
-      <PizzaForm editPizza={PizzaForm} handleFormChange={handleFormChange} handleSubmit={handleSubmit}/>
-      <PizzaList pizzas={pizzas} onEdit={handlePizzaEdit}/>
+      <PizzaForm pizza={pizzaFormData} updatePizza={updatePizza} />
+      <PizzaList pizzaData={pizzaData} handleClick={addToForm} />
     </>
   );
 }
 
 export default App;
+
+
+/*
+App
+  |__Header
+  |__PizzaForm
+  |__PizzaList
+        |__Pizza
+*/

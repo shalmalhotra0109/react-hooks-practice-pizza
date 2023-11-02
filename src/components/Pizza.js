@@ -1,15 +1,6 @@
 import React from "react";
 
-function Pizza({pizza, onEdit}) {
-  function handleEdit(e) {
-    const editPizza = {
-      'id':pizza.id,
-      'topping': pizza.topping,
-      'size': pizza.size,
-      'vegetarian': pizza.vegetarian
-    }
-    onEdit(editPizza);
-  }
+function Pizza({ pizza, handleClick }) {
 
   return (
     <tr>
@@ -17,7 +8,7 @@ function Pizza({pizza, onEdit}) {
       <td>{pizza.size}</td>
       <td>{pizza.vegetarian ? "Yes" : "No"}</td>
       <td>
-        <button type="button" className="btn btn-primary" onClick={handleEdit}>
+        <button type="button" className="btn btn-primary" onClick={() => handleClick(pizza)}>
           Edit Pizza
         </button>
       </td>
